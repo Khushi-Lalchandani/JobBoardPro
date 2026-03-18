@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { auth, signOut } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { connectDB } from "@/lib/db";
 import Job from "@/models/Job";
@@ -16,12 +16,27 @@ export default async function CompanyDashboard() {
             <header className="border-b border-white/10 bg-white/5 backdrop-blur-md px-6 py-4">
                 <div className="mx-auto max-w-5xl flex items-center justify-between">
                     <span className="text-xl font-bold tracking-tight text-indigo-300">JobBoard <span className="text-white">Pro</span></span>
-                    <a
-                        href="/company/jobs/new"
-                        className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-4 py-2 transition-colors"
-                    >
-                        <span className="text-lg leading-none">+</span> Post a New Job
-                    </a>
+                    <div className="flex items-center gap-4">
+                        <a
+                            href="/company/jobs/new"
+                            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-4 py-2 transition-colors"
+                        >
+                            <span className="text-lg leading-none">+</span> Post a New Job
+                        </a>
+                        <form
+                            action={async () => {
+                                "use server";
+                                await signOut();
+                            }}
+                        >
+                            <button
+                                type="submit"
+                                className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 text-white text-sm font-medium px-4 py-2 transition-colors"
+                            >
+                                Logout
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </header>
 
@@ -48,11 +63,10 @@ export default async function CompanyDashboard() {
                                 <div>
                                     <p className="font-semibold text-white text-lg">{job.title}</p>
                                     <span
-                                        className={`mt-1 inline-block text-xs font-medium px-2.5 py-0.5 rounded-full ${
-                                            job.status === "open"
+                                        className={`mt-1 inline-block text-xs font-medium px-2.5 py-0.5 rounded-full ${job.status === "open"
                                                 ? "bg-emerald-500/20 text-emerald-400"
                                                 : "bg-slate-500/20 text-slate-400"
-                                        }`}
+                                            }`}
                                     >
                                         {job.status}
                                     </span>
