@@ -12,11 +12,16 @@ export async function GET(req: Request) {
     const location = searchParams.get("location");
     const type = searchParams.get("type");
 
+    const status = searchParams.get("status");
+
     let query: any = {};
 
     // If companyId is provided, it's likely for a specific company's dashboard
     if (companyId) {
         query.companyId = companyId;
+    } else if (status) {
+        // Explicit status filter (e.g., from Admin Panel)
+        query.status = status;
     } else {
         // Public search: check for approved jobs first
         const approvedCount = await Job.countDocuments({ status: "approved" });
@@ -26,17 +31,11 @@ export async function GET(req: Request) {
             // Development/Fallback: show pending jobs if no approved jobs exist
             query.status = "pending";
         }
-        
-        if (title) {
-            query.title = { $regex: title, $options: "i" };
-        }
-        if (location) {
-            query.location = { $regex: location, $options: "i" };
-        }
-        if (type) {
-            query.type = type;
-        }
     }
+
+    if (title) query.title = { $regex: title, $options: "i" };
+    if (location) query.location = { $regex: location, $options: "i" };
+    if (type) query.type = type;
 
     const jobs = await Job.find(query)
         .populate("companyId", "name email") // Include company info

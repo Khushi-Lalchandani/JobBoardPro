@@ -10,7 +10,7 @@ interface Application {
         title: string;
         slug: string;
         companyId: string;
-        
+
     };
     status: string;
     createdAt: string;
@@ -28,9 +28,16 @@ export default function UserDashboard() {
             return;
         }
 
-        if (status === "authenticated" && (session?.user as any)?.role === "company") {
-            router.push("/company/dashboard");
-            return;
+        if (status === "authenticated") {
+            const role = (session?.user as any)?.role;
+            if (role === "company") {
+                router.push("/company/dashboard");
+                return;
+            }
+            if (role === "admin") {
+                router.push("/admin");
+                return;
+            }
         }
 
         const fetchApplications = async () => {
@@ -101,21 +108,20 @@ export default function UserDashboard() {
                                         </span>
                                     </div>
                                 </div>
-                                
+
                                 <div className="flex items-center justify-between md:justify-end gap-6">
                                     <div className="flex flex-col items-end">
                                         <span className="text-xs text-slate-500 uppercase tracking-widest font-semibold mb-1">Status</span>
-                                        <span className={`px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                                            app.status === 'pending' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
-                                            app.status === 'shortlisted' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-                                            app.status === 'rejected' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
-                                            'bg-slate-500/10 text-slate-400 border border-slate-500/20'
-                                        }`}>
+                                        <span className={`px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${app.status === 'pending' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
+                                                app.status === 'shortlisted' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                                                    app.status === 'rejected' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
+                                                        'bg-slate-500/10 text-slate-400 border border-slate-500/20'
+                                            }`}>
                                             {app.status}
                                         </span>
                                     </div>
-                                    <Link 
-                                        href={`/jobs/${app.jobId.slug}`} 
+                                    <Link
+                                        href={`/jobs/${app.jobId.slug}`}
                                         className="p-3 bg-white/5 border border-white/10 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-all"
                                     >
                                         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

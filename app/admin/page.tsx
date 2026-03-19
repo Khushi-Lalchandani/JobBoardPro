@@ -40,6 +40,7 @@ export default function AdminDashboard() {
             try {
                 const res = await fetch("/api/jobs"); // This now returns pending jobs if no approved ones exist
                 const data = await res.json();
+                console.log(data)
                 // Filter specifically for pending jobs for the admin view
                 setJobs(data.filter((j: Job) => j.status === "pending"));
             } catch (error) {
@@ -123,7 +124,7 @@ export default function AdminDashboard() {
                                         <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-400 mb-6">
                                             <span className="flex items-center gap-1.5">
                                                 <svg className="h-4 w-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                                 </svg>
                                                 {job.companyId?.name}
                                             </span>
@@ -138,16 +139,16 @@ export default function AdminDashboard() {
                                             &quot;{job.description}&quot;
                                         </div>
                                     </div>
-                                    
+
                                     <div className="flex md:flex-col items-center justify-center gap-3 md:w-48">
-                                        <button 
+                                        <button
                                             onClick={() => handleAction(job._id, "approved")}
                                             disabled={actioning === job._id}
                                             className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-emerald-600/20 active:scale-[0.98] flex items-center justify-center gap-2"
                                         >
                                             {actioning === job._id ? <div className="animate-spin h-4 w-4 border-b-2 border-white rounded-full"></div> : "Approve"}
                                         </button>
-                                        <button 
+                                        <button
                                             onClick={() => handleAction(job._id, "rejected")}
                                             disabled={actioning === job._id}
                                             className="w-full bg-white/5 border border-white/10 hover:border-red-500/50 text-slate-400 hover:text-red-400 font-bold py-3 rounded-xl transition-all active:scale-[0.98]"

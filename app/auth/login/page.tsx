@@ -12,17 +12,42 @@ export default function LoginPage() {
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         const form = new FormData(e.currentTarget);
-        const res = await signIn("credentials", {
-            email: form.get("email"),
-            password: form.get("password"),
-            redirect: false,
-        });
-        if (res?.error) setError("Invalid credentials");
-        else router.push("/company/dashboard");
+        setError("");
+        
+        try {
+            const res = await signIn("credentials", {
+                email: form.get("email"),
+                password: form.get("password"),
+                redirect: false,
+            });
+
+            if (res?.error) {
+                setError("Invalid credentials");
+                return;
+            }
+
+            // After login, we need to fetch the session to know the role
+            // but signIn doesn't return the full user object in NextAuth v5 easily 
+            // without a full page reload or using useSession.
+            // However, we can just redirect to a neutral /dashboard and let it handle the role redirect,
+            // or better, respect the callbackUrl.
+            
+            const callbackUrl = searchParams.get("callbackUrl");
+            if (callbackUrl) {
+                router.push(callbackUrl);
+                return;
+            }
+
+            // Neutral redirect: go to the root /dashboard which I previously configured to handle role-based redirects
+            router.push("/dashboard");
+
+        } catch (err) {
+            setError("Something went wrong. Please try again.");
+        }
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900">
+        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-900 via-indigo-950 to-slate-900">
             <div className="w-full max-w-md bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl p-8">
                 <div className="mb-8 text-center">
                     <h1 className="text-3xl font-bold text-white tracking-tight">Welcome back</h1>
@@ -34,7 +59,7 @@ export default function LoginPage() {
                         <svg className="h-4 w-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                         </svg>
-                        This account is not a company account. Please register as a Company.
+                        Access Denied: You do not have the required permissions for that area.
                     </div>
                 )}
                 {error && (

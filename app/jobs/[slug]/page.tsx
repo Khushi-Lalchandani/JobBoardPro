@@ -96,8 +96,8 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
                             <div className="mb-6">
                                 <p className="text-slate-400 text-sm mb-2">Salary range</p>
                                 <p className="text-2xl font-bold text-white">
-                                    {job.salary && job.salary.min && job.salary.max 
-                                        ? `${job.salary.min.toLocaleString()} — ${job.salary.max.toLocaleString()} ${job.salary.currency}` 
+                                    {job.salary && job.salary.min && job.salary.max
+                                        ? `${job.salary.min.toLocaleString()} — ${job.salary.max.toLocaleString()} ${job.salary.currency}`
                                         : "Competitive"}
                                 </p>
                             </div>

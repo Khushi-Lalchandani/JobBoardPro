@@ -24,7 +24,7 @@ export default function RegisterPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900">
+        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-900 via-indigo-950 to-slate-900">
             <div className="w-full max-w-md bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl p-8">
                 <div className="mb-8 text-center">
                     <h1 className="text-3xl font-bold text-white tracking-tight">Create an account</h1>
@@ -78,6 +78,7 @@ export default function RegisterPage() {
                         >
                             <option value="user">Job Seeker</option>
                             <option value="company">Company</option>
+                            <option value="admin">System Administrator</option>
                         </select>
                     </div>
                     <button
