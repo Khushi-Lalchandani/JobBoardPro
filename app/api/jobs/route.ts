@@ -3,13 +3,45 @@ import { auth } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import Job from "@/models/Job";
 
-// GET — list jobs for logged-in company
+// GET — list jobs with optional filtering
 export async function GET(req: Request) {
-    const session = await auth();
     await connectDB();
     const { searchParams } = new URL(req.url);
     const companyId = searchParams.get("companyId");
-    const jobs = await Job.find(companyId ? { companyId } : {});
+    const title = searchParams.get("title");
+    const location = searchParams.get("location");
+    const type = searchParams.get("type");
+
+    let query: any = {};
+
+    // If companyId is provided, it's likely for a specific company's dashboard
+    if (companyId) {
+        query.companyId = companyId;
+    } else {
+        // Public search: check for approved jobs first
+        const approvedCount = await Job.countDocuments({ status: "approved" });
+        if (approvedCount > 0 || process.env.NODE_ENV === "production") {
+            query.status = "approved";
+        } else {
+            // Development/Fallback: show pending jobs if no approved jobs exist
+            query.status = "pending";
+        }
+        
+        if (title) {
+            query.title = { $regex: title, $options: "i" };
+        }
+        if (location) {
+            query.location = { $regex: location, $options: "i" };
+        }
+        if (type) {
+            query.type = type;
+        }
+    }
+
+    const jobs = await Job.find(query)
+        .populate("companyId", "name email") // Include company info
+        .sort({ createdAt: -1 });
+
     return NextResponse.json(jobs);
 }
 
